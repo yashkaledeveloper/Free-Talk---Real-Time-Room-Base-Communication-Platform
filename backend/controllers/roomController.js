@@ -16,6 +16,7 @@ const createRoom = async (req, res) => {
             isPrivate,
         } = req.body;
 
+        
         // Basic validation
         if (!name || !topic || !language) {
             return res.status(400).json({
@@ -134,8 +135,8 @@ const getRoomById = async (req, res) => {
 // ========================================
 const joinRoom = async (req, res) => {
     try {
-        const room = await Room.findById(req.params.id);
-
+        const room = await Room.findById(req.params.id);        
+        
         if (!room) {
             return res.status(404).json({
                 message: "Room not found",
