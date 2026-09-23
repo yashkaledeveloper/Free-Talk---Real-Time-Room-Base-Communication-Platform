@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import RoomPage from "./pages/RoomPage";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
@@ -28,6 +29,8 @@ const App = () => {
           path="/"
           element={<Dashboard/>}
         />
+
+        <Route path="/not" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

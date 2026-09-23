@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import socket from '../socket';
 
 // const room = { _id: "6aabcb36cd64db25b6205c8a", name: "English Practice", description: "Practice English speaking with others", topic: "Conversation", language: "English", level: "Beginner", maxUsers: 10, admin: { _id: "6aabc567fd66102a4ab2c9c3", name: "ashu", username: "ashu", avatar: "", bio: "", }, members: [ { _id: "6aabc567fd66102a4ab2c9c3", name: "ashu", username: "ashu", avatar: "", }, { _id: "6aaa7ac239718ec53239bec3", name: "sarthak", username: "sarthak", avatar: "", }, ], isPrivate: false, };
 
@@ -11,6 +12,63 @@ const RoomPage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [room, setRoom] = useState([]);
+    const [messages, setMessages] = useState([]);
+    const [message, setMessage] = useState("Hello");
+    const [msgHistory, setMsgHistory] = useState([]);
+
+    useEffect(() => {
+        const fetchMsgs = async () => {
+            const { data } = await api.get(`/rooms/${id}/msg`)
+            setMsgHistory(data)
+        }
+        fetchMsgs();
+    }, [])
+
+    useEffect(() => {
+
+        socket.emit("join-room", id);
+
+        const handleUserJoined = (data) => {
+            console.log("New user joined:", data.socketId);
+        };
+        socket.on("user-joined", handleUserJoined);
+
+        const handleMessage = (data) => {
+            setMessages((prev) => [
+                ...prev,
+                data
+            ])
+            // console.log("New message:", data);
+        };
+
+
+
+        // socket.emit("send-msg", {roomId: id, msg: 'this is frontend msg'})
+
+        socket.on("receive-msg", handleMessage);
+
+        return () => {
+            socket.emit("leave-room", id);
+
+            socket.off("user-joined", handleUserJoined);
+            socket.off("receive-msg", handleMessage);
+        };
+
+    }, [id]);
+
+    const sendMessage = () => {
+
+        if (!message.trim()) return;
+
+        socket.emit("send-msg", {
+            roomId: id,
+            content: message,
+            senderId: user._id
+        });
+
+
+        setMessage("");
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,18 +87,37 @@ const RoomPage = () => {
 
     }, [id]);
 
-    const checkJoinUser = useEffect(() => {
-        return () => room.members?.some((userId) => userId._id == user._id)
-    }, [room])
 
+    
     const handleLeave = async () => {
         try {
             await api.post(`/rooms/${id}/leave`)
             navigate('/')
-        } catch(err) {
+        } catch (err) {
             console.log(err)
         }
     }
+
+    // return (
+    //     <div>
+    //         <input
+    //             value={message}
+    //             onChange={(e) => setMessage(e.target.value)}
+    //             placeholder="Type a message..."
+    //         />
+
+    //         <button onClick={sendMessage}>
+    //             Send
+    //         </button>
+    //         <div>
+    //             {messages.map((msg, index) => (
+    //                 <div key={index}>
+    //                     {msg.content}
+    //                 </div>
+    //             ))}
+    //         </div>
+    //     </div>
+    // )
 
     return (
         <div className="min-h-screen bg-blue-50">
@@ -51,20 +128,18 @@ const RoomPage = () => {
 
                     <div>
                         <h1 className="text-xl font-semibold text-blue-900">
-                            {room.name}
+                            {room?.name}
                         </h1>
 
                         <p className="text-sm text-gray-500">
-                            {room.description}
+                            {room?.description}
                         </p>
                     </div>
 
                     {
-                        (checkJoinUser) ? <button className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600">
-            Join Room
-          </button> : <button className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600" onClick={handleLeave}>
-            Leave Room
-          </button>
+                       <button className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600" onClick={handleLeave}>
+                            Leave Room
+                        </button>
                     }
                 </div>
             </header>
@@ -121,9 +196,9 @@ const RoomPage = () => {
                     {/* Admin */}
                     <div className="mt-6 border-t border-gray-100 pt-5">
 
-                        
+
                     </div>
-                
+
                     <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-1">
 
                         {room.members?.map((member) => (
@@ -191,39 +266,16 @@ const RoomPage = () => {
 
                     {/* Messages */}
                     <div className="flex-1 space-y-4 overflow-y-auto p-5">
-
-                        <div className="flex gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
-                                A
+                        {msgHistory.map((msg, index) => (
+                            <div key={index}>
+                                <b>{msg.sender.name}: </b> {msg.content}
                             </div>
-
-                            <div>
-                                <p className="text-xs font-medium text-gray-500">
-                                    ashu
-                                </p>
-
-                                <div className="mt-1 rounded-lg bg-blue-50 px-3 py-2 text-sm text-gray-800">
-                                    Hello everyone 👋
-                                </div>
+                        ))}
+                        {messages.map((msg, index) => (
+                            <div key={index}>
+                                <b>{msg.sender?.name}: </b> {msg.content}
                             </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
-                                S
-                            </div>
-
-                            <div>
-                                <p className="text-xs font-medium text-gray-500">
-                                    sarthak
-                                </p>
-
-                                <div className="mt-1 rounded-lg bg-blue-50 px-3 py-2 text-sm text-gray-800">
-                                    Hi! Let's practice English.
-                                </div>
-                            </div>
-                        </div>
-
+                        ))}
                     </div>
 
                     {/* Message Input */}
@@ -232,12 +284,13 @@ const RoomPage = () => {
                         <div className="flex gap-3">
 
                             <input
-                                type="text"
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
                                 placeholder="Type a message..."
                                 className="flex-1 rounded-lg border border-gray-200 px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                             />
 
-                            <button className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+                            <button onClick={sendMessage} className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
                                 Send
                             </button>
 
@@ -252,7 +305,7 @@ const RoomPage = () => {
             {/* Members */}
             <section className="mx-auto max-w-6xl px-6 pb-8">
 
-               
+
             </section>
 
         </div>
