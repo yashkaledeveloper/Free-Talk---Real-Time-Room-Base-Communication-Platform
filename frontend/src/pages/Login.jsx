@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const { login } = useAuth();
@@ -16,8 +17,9 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate("/profile");
+      navigate("/");
     } catch (error) {
+      toast.error(error.response?.data?.message)
       setError(error.response?.data?.message || "Login failed");
     }
   };

@@ -3,6 +3,7 @@ import SearchFilter from '../components/SearchFilter'
 import RoomCard from '../components/RoomCard'
 import api from '../services/api'
 import CreateRoom from '../components/CreateRoom'
+import { useAuth } from '../context/AuthContext'
 
 const Dashboard = () => {
 
@@ -43,9 +44,12 @@ const Dashboard = () => {
   //   ],
   // }]
 
+  const { user } = useAuth();
+
+
   const fetchData = async (parameters) => {
     try {
-      const response = await api.get('/rooms/', {params: parameters});
+      const response = await api.get('/rooms/', { params: parameters });
       setCards(response.data.rooms); // Axios auto-parses JSON into response.data
     } catch (err) {
       setError(err.message);
@@ -66,7 +70,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      <CreateRoom/>
+      <CreateRoom />
       {/* {cards} */}
       <div className="search-filter w-[100%]">
         <SearchFilter setParams={setParams} />
@@ -74,7 +78,9 @@ const Dashboard = () => {
       <div className="cards">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4 mr-12 ml-12">
           {cards.map((room) => (
-            <RoomCard key={room._id} room={room} />
+            // (room.admin._id == )
+            <RoomCard key={room._id} room={room}
+             isAdmin={(user?._id === room.admin?._id) ? true : false}/>
           ))}
         </div>
         {/* <RoomCard room={room} /> */}

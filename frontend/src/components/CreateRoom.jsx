@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../services/api";
+import { ToastContainer, toast } from 'react-toastify';
 
 const CreateRoom = ({ onCreateRoom }) => {
     const [open, setOpen] = useState(false);
@@ -29,8 +30,9 @@ const CreateRoom = ({ onCreateRoom }) => {
 
             setOpen(false);
 
-            await api.post('/rooms/', { ...form });
-            
+            const { data } = await api.post('/rooms/', { ...form });
+            toast.success(data.message)
+            window.location.href = ""
         } catch(err) {
             console.log(err);
         }

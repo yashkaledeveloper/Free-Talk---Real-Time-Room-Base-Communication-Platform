@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import socket from '../socket';
+import { ToastContainer, toast } from 'react-toastify';
 
 // const room = { _id: "6aabcb36cd64db25b6205c8a", name: "English Practice", description: "Practice English speaking with others", topic: "Conversation", language: "English", level: "Beginner", maxUsers: 10, admin: { _id: "6aabc567fd66102a4ab2c9c3", name: "ashu", username: "ashu", avatar: "", bio: "", }, members: [ { _id: "6aabc567fd66102a4ab2c9c3", name: "ashu", username: "ashu", avatar: "", }, { _id: "6aaa7ac239718ec53239bec3", name: "sarthak", username: "sarthak", avatar: "", }, ], isPrivate: false, };
 
@@ -75,7 +76,7 @@ const RoomPage = () => {
             try {
                 const { data } = await api.get(`/rooms/${id}`);
                 setRoom(data.room);
-                await api.post(`/rooms/${id}/join`);
+                // await api.post(`/rooms/${id}/join`);
             } catch (error) {
                 console.log(error);
                 // console.log("Status:", error.response?.status);
@@ -88,16 +89,28 @@ const RoomPage = () => {
     }, [id]);
 
 
-    
+
     const handleLeave = async () => {
         try {
-            await api.post(`/rooms/${id}/leave`)
+            const { data } = await api.post(`/rooms/${id}/leave`)
             navigate('/')
+            toast.success(data.message)
         } catch (err) {
             console.log(err)
+            toast.error(err.message)
         }
     }
 
+    const handleDeleteRoom = async () => {
+        try {
+            const { data } = await api.delete(`/rooms/${id}`)
+            navigate('/')
+            toast.success(data.message)
+        } catch(err) {
+            console.log(err)
+            toast.error(err.message)
+        }
+    }
     // return (
     //     <div>
     //         <input
@@ -136,11 +149,19 @@ const RoomPage = () => {
                         </p>
                     </div>
 
-                    {
-                       <button className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600" onClick={handleLeave}>
-                            Leave Room
-                        </button>
-                    }
+
+                    <div>
+                        {
+                            (room?.admin?._id !== user?._id) ? <button className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white
+                        hover:bg-red-600" onClick={handleLeave}>
+                                Leave Room
+                            </button> : <button className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white
+                        hover:bg-red-600" onClick={handleDeleteRoom}>
+                                Delete Room
+                            </button>
+
+                        }
+                    </div>
                 </div>
             </header>
 

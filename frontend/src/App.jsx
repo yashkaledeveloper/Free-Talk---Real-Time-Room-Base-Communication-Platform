@@ -21,13 +21,11 @@ const App = () => {
 
         <Route path="/room/:id/join" element={<RoomPage />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-
+        <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
+        
         <Route
           path="/"
-          element={<Dashboard/>}
+          element={<ProtectedRoute><Dashboard/></ProtectedRoute>}
         />
 
         <Route path="/not" element={<NotFound />} />

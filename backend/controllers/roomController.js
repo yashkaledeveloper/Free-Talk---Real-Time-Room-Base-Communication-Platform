@@ -161,22 +161,22 @@ const joinRoom = async (req, res) => {
     try {
         const room = await Room.findById(req.params.id);        
         
+
+         const alreadyMember = room.members.some(
+            (memberId) => memberId.toString() === req.user.userId.toString()
+        );
+        
+        
+        if (alreadyMember) {
+            return res.status(200).json({
+                message: "You are already a member of this room",
+                room
+            });
+        }
+        
         if (!room) {
             return res.status(404).json({
                 message: "Room not found",
-            });
-        }
-
-        // Check if already a member
-        
-        const alreadyMember = room.members.some(
-            (memberId) => memberId.toString() === req.user.userId.toString()
-        );
-
-       
-        if (alreadyMember) {
-            return res.status(400).json({
-                message: "You are already a member of this room",
             });
         }
 
@@ -186,17 +186,23 @@ const joinRoom = async (req, res) => {
                 message: "Room is full",
             });
         }
-
+        
         // Check private room
         if (room.isPrivate) {
             return res.status(403).json({
                 message: "This is a private room",
             });
         }
-
+        
+        
+        // Check if already a member
+        
+       
+        
         room.members.push(req.user.userId);
-
+        
         await room.save();
+
 
         res.status(200).json({
             message: "Joined room successfully",
@@ -285,6 +291,8 @@ const deleteRoom = async (req, res) => {
         }
 
         await Room.findByIdAndDelete(req.params.id);
+
+        await Message.deleteMany({room: req.params.id})
 
         res.status(200).json({
             message: "Room deleted successfully",

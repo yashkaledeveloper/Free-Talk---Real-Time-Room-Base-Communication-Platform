@@ -65,11 +65,11 @@ const SearchFilter = ({ setParams }) => {
                         className="w-52 rounded-xl border border-blue-100 bg-blue-50/40 px-4 py-3 text-sm text-gray-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                     >
                         <option value="">Select topic</option>
-                        <option value="general">General</option>
-                        <option value="technology">Technology</option>
-                        <option value="business">Business</option>
-                        <option value="education">Education</option>
-                        <option value="gaming">Gaming</option>
+                        <option value="General">General</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Business">Business</option>
+                        <option value="Education">Education</option>
+                        <option value="Gaming">Gaming</option>
                     </select>
 
                     {/* Language */}
