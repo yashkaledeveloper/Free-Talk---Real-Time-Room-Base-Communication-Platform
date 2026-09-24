@@ -17,7 +17,7 @@ const Login = () => {
 
     try {
       await login(email, password);
-      navigate("/");
+      window.location.href = "/"
     } catch (error) {
       toast.error(error.response?.data?.message)
       setError(error.response?.data?.message || "Login failed");
