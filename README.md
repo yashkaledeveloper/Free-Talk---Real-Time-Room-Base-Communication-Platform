@@ -74,7 +74,7 @@ FreeTalk/
 
 ```bash
 git clone https://github.com/yashkaledeveloper/Free-Talk---Real-Time-Room-Base-Communication-Platform.git
-cd YOUR_REPOSITORY
+cd Project folder
 ```
 
 ### 2. Backend Setup
@@ -207,7 +207,7 @@ This project was built to gain practical experience with:
 
 ## 👨‍💻 Author
 
-**Your Name**
+**Yash Kale**
 
 BTech Computer Science Engineering Student
 
