@@ -211,4 +211,4 @@ This project was built to gain practical experience with:
 
 BTech Computer Science Engineering Student
 
-Interested in Full-Stack Development, Real-Time Systems and AI Engineering.
+Interested in Full-Stack Development, Real-Time Systems.
