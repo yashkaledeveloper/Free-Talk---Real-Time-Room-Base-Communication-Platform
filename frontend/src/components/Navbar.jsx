@@ -12,6 +12,7 @@ const Navbar = () => {
         <Link to="/" className="text-xl font-semibold text-blue-600 hover:text-blue-700 transition" > TalkSphere </Link>
         {/* Navigation */}
         <div className="flex items-center gap-3 sm:gap-5">
+          <Link to="/friends">Make Friends</Link>
           {user ? (<>
             <Link to="/profile" className="flex gap-2" > <span class="material-symbols-outlined">
               account_circle

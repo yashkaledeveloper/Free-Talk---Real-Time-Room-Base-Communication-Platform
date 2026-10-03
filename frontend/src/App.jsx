@@ -8,6 +8,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import RoomPage from "./pages/RoomPage";
 import NotFound from "./pages/NotFound";
+import Friends from "./pages/Friends";
 
 const App = () => {
   return (
@@ -18,6 +19,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
 
         <Route path="/register" element={<Register />} />
+
+         <Route path="/friends" element={<Friends />} />
 
         <Route path="/room/:id/join" element={<RoomPage />} />
 
