@@ -15,9 +15,18 @@ const Profile = () => {
       setFollowing(following.data.following);
       const followers = await api.get("/users/followers");
       setFollowers(followers.data.followers);
-    } 
+    }
     fetchData()
-  }, [])
+  }, [followers & following])
+
+  const handleFollow = async (userId, isFollow) => {
+    if (isFollow) {
+      await api.delete(`/users/${userId}/follow`)
+    } else {
+      await api.post(`/users/${userId}/follow`)
+    }
+    console.log(userId, isFollow)
+  }
 
   if (!user) {
     return (
@@ -31,13 +40,13 @@ const Profile = () => {
     <main className="min-h-[calc(100vh-64px)] bg-blue-50 px-4 py-10">
       <div className="mx-auto max-w-lg">
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-blue-100">
-          
+
           {/* Profile Header */}
           <div className="flex flex-col items-center px-6 py-8 text-center sm:px-10">
             <img
-              src={user.avatar || "https://via.placeholder.com/150"}
+              src='https://static.thenounproject.com/png/638636-200.png'
               alt={user.username}
-              className="h-24 w-24 rounded-full object-cover ring-4 ring-blue-50"
+              className="h-24 w-24 object-cover ring-4 ring-blue-50"
             />
 
             <h1 className="mt-5 text-2xl font-semibold text-gray-900">
@@ -64,9 +73,12 @@ const Profile = () => {
                   Followers
                 </p>
 
-                <ul style={{marginTop: '20px'}}>
+                <ul style={{ marginTop: '20px' }}>
                   {
-  followers.map(item => <li key={item._id}>{item.name} <button className="bg-blue-400 px-2">follow</button></li>)
+                    followers.map(item => <li key={item._id} className="my-2 grid grid-cols-2">
+                      {item.name}
+                      <button onClick={() => handleFollow(item._id, false)} className="bg-blue-400 px-2">follow</button>
+                    </li>)
                   }
                 </ul>
               </div>
@@ -79,9 +91,13 @@ const Profile = () => {
                   Following
                 </p>
 
-                <ul style={{marginTop: '20px'}}>
+                <ul style={{ marginTop: '20px' }}>
                   {
- following.map(item => <li key={item._id}>{item.name} <button className='bg-blue-400 px-2'>unfollow</button></li>)
+                    following.map(item => <li key={item._id} className="my-2 grid grid-cols-2">
+                      {item.name}
+                      <button onClick={() => handleFollow(item._id, true)}
+                        className="bg-blue-200 px-2">unfollow</button>
+                    </li>)
                   }
                 </ul>
               </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import api from '../services/api'
+import { toast } from "react-toastify"
 
 const Friends = () => {
 
@@ -19,8 +20,7 @@ const Friends = () => {
     const handleFollow = async (userId) => {
         try {
             const { data } = await api.post(`/users/${userId}/follow`)
-            console.log(data)
-
+            toast(data)
         }catch(err) {
             console.log(err)
         }
@@ -28,13 +28,13 @@ const Friends = () => {
 
     return (
         <div>
-            <ul className='grid flex-2 gap-2'>
+            <ul className='grid flex-2 gap-2 flex justify-center m-auto'>
                 {
-                    friends.map(item => <li key={item._id}>
+                    friends.map(item => <li key={item._id} >
                         <div className='flex gap-3 m-4'>
-                            <div className="w-20 h-20 flex justify-center align-center bg-blue-400"></div>
+ <img src='https://static.thenounproject.com/png/638636-200.png' className="w-20 h-20 flex justify-center align-center bg-blue-400"/>
                             <div><b>{item.name}</b><br />{item.username}</div>
-                            <button className='bg-blue-100 w-20 h-12' onClick={() => handleFollow(item._id)}>Follow</button>
+                            <button className='bg-blue-100 w-20 h-12 mx-40' onClick={() => handleFollow(item._id)}>Follow</button>
                         </div>
                     </li>
                     )
