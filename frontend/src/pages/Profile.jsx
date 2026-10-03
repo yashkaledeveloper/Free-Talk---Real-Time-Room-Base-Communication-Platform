@@ -1,12 +1,23 @@
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import axios from "axios";
+import api from "../services/api";
+import { useState } from "react";
 
 const Profile = () => {
   const { user } = useAuth();
+  const [followers, setFollowers] = useState([]);
+  const [following, setFollowing] = useState([]);
 
   useEffect(() => {
-    console.log(user);
-  }, [user])
+    const fetchData = async () => {
+      const following = await api.get("/users/following");
+      setFollowing(following.data.following);
+      const followers = await api.get("/users/followers");
+      setFollowers(followers.data.followers);
+    } 
+    fetchData()
+  }, [])
 
   if (!user) {
     return (
@@ -52,15 +63,27 @@ const Profile = () => {
                 <p className="mt-1 text-xs text-gray-500">
                   Followers
                 </p>
+
+                <ul style={{marginTop: '20px'}}>
+                  {
+  followers.map(item => <li key={item._id}>{item.name} <button className="bg-blue-400 px-2">follow</button></li>)
+                  }
+                </ul>
               </div>
 
-              <div className="border-l border-gray-100 px-4 py-5 text-center">
+              <div className="px-4 py-5 text-center">
                 <p className="text-xl font-semibold text-gray-900">
                   {user.following?.length || 0}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">
                   Following
                 </p>
+
+                <ul style={{marginTop: '20px'}}>
+                  {
+ following.map(item => <li key={item._id}>{item.name} <button className='bg-blue-400 px-2'>unfollow</button></li>)
+                  }
+                </ul>
               </div>
             </div>
           </div>
